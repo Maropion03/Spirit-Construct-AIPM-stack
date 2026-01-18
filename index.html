@@ -1,0 +1,517 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI产品经理培养平台 - 提供AI成本计算器、参数调试场、PRD生成器等实用工具">
+  <title>Spirit Construct | 面向产品经理的产品</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Outfit:wght@700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon.png">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <a href="#" class="navbar-brand" data-section="home">
+      <img src="assets/logo_dark_mode.png" alt="Spirit Construct" class="navbar-logo logo-dark">
+      <img src="assets/logo_light_mode.png" alt="Spirit Construct" class="navbar-logo logo-light">
+      <div class="brand-divider"></div>
+      <div class="brand-text-container">
+        <span class="brand-name-zh">灵构</span>
+        <span class="brand-name-en">AIPM STACK</span>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" class="nav-link active" data-section="home">首页</a></li>
+      <li><a href="#" class="nav-link" data-section="calculator">成本计算器</a></li>
+      <li><a href="#" class="nav-link" data-section="playground">参数调试场</a></li>
+      <li><a href="#" class="nav-link" data-section="prd-generator">PRD生成器</a></li>
+      <li><a href="#" class="nav-link" data-section="roadmap">学习路线</a></li>
+    </ul>
+
+    <!-- Navbar Actions (Login + Theme) -->
+    <div class="navbar-actions">
+      <a href="login.html" class="navbar-login-btn" title="登录">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+        </svg>
+      </a>
+      <div class="theme-toggle-container">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" title="切换主题">
+          <span class="theme-icon-light">☀</span>
+          <span class="theme-icon-dark">☾</span>
+        </button>
+        <div class="theme-dropdown">
+          <div class="theme-option" data-theme="light">
+            <img src="assets/light_preview.png" alt="浅色模式" class="theme-preview">
+            <span>浅色模式</span>
+          </div>
+          <div class="theme-option" data-theme="dark">
+            <img src="assets/dark_preview.png" alt="深色模式" class="theme-preview">
+            <span>深色模式</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- ==================== HOME SECTION ==================== -->
+    <section id="home" class="section active">
+
+
+      <div class="features-grid">
+        <div class="feature-card" data-navigate="calculator">
+          <div class="feature-icon">01</div>
+          <h3>AI成本与ROI估算</h3>
+          <p>选择模型，输入用户数据，自动计算API成本与盈亏平衡点，让你的AI产品更有底气。</p>
+        </div>
+
+        <div class="feature-card" data-navigate="playground">
+          <div class="feature-icon">02</div>
+          <h3>模型参数调试场</h3>
+          <p>实时调整Temperature、Top-P等参数，直观感受模型行为变化，掌握AI调优的艺术。</p>
+        </div>
+
+        <div class="feature-card" data-navigate="prd-generator">
+          <div class="feature-icon">03</div>
+          <h3>AI PRD生成助手</h3>
+          <p>一句话需求即可生成专业PRD文档，包含用户画像、功能列表、数据埋点建议。</p>
+        </div>
+
+        <div class="feature-card" data-navigate="roadmap">
+          <div class="feature-icon">04</div>
+          <h3>动态学习路线图</h3>
+          <p>可交互的成长路径，记录每个阶段的学习内容、代码片段和踩坑经验。</p>
+        </div>
+      </div>
+
+      <!-- Industry News Section -->
+      <div class="news-section">
+        <div class="news-header">
+          <h2>行业资讯推荐 <span class="news-refresh-note">整点刷新</span></h2>
+          <span class="news-date" id="news-date"></span>
+        </div>
+        <div class="news-grid" id="news-grid">
+          <!-- News cards will be dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== CALCULATOR SECTION ==================== -->
+    <section id="calculator" class="section">
+      <h2>AI成本与ROI估算器</h2>
+      <p>精确计算你的AI产品运营成本，找到盈利的平衡点</p>
+
+      <div class="card mt-3">
+        <div class="card-header">
+          <h3>产品数据输入</h3>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">每日活跃用户数 (DAU)</label>
+          <input type="number" id="calc-dau" class="input-field" placeholder="例如: 1000" min="1">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">平均每人每日对话轮数</label>
+          <input type="number" id="calc-conversations" class="input-field" placeholder="例如: 10" min="1">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">平均每轮输入Token数</label>
+          <input type="number" id="calc-input-tokens" class="input-field" placeholder="例如: 100" min="1">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">平均每轮输出Token数</label>
+          <input type="number" id="calc-output-tokens" class="input-field" placeholder="例如: 400" min="1">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">选择模型</label>
+          <div class="custom-select-wrapper">
+            <select id="calc-model" class="select-field">
+              <option value="llama-8b">Llama 3.1 8B ($0.1/1M tokens)</option>
+              <option value="llama-70b">Llama 3.1 70B ($0.8/1M tokens)</option>
+              <option value="qwen-7b">Qwen 2.5 7B ($0.15/1M tokens)</option>
+              <option value="glm-9b">GLM-4 9B ($0.2/1M tokens)</option>
+              <option value="mistral-7b">Mistral 7B ($0.12/1M tokens)</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn btn-primary mt-2" id="calc-compute">计算成本</button>
+
+        <div id="calc-results" class="hidden">
+          <h3 class="mt-3 mb-2">计算结果</h3>
+          <div class="result-grid">
+            <div class="result-item">
+              <div class="result-label">每日Token数</div>
+              <div class="result-value" id="result-daily-tokens">0</div>
+              <div class="result-unit">tokens</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">每日成本</div>
+              <div class="result-value" id="result-daily-cost">$0</div>
+              <div class="result-unit">USD</div>
+            </div>
+            <div class="result-item">
+              <div class="result-label">每月成本</div>
+              <div class="result-value" id="result-monthly-cost">$0</div>
+              <div class="result-unit">USD</div>
+            </div>
+          </div>
+
+          <!-- ROI Calculator -->
+          <div class="card mt-3" style="background: var(--bg-input);">
+            <h4>进阶：盈亏平衡点计算</h4>
+            <div class="input-group mt-2">
+              <label class="input-label">订阅费用（每月/用户）</label>
+              <input type="number" id="calc-subscription" class="input-field" placeholder="例如: 19.9" min="0" step="0.1">
+            </div>
+            <button class="btn btn-secondary mt-1" id="calc-breakeven">计算盈亏平衡点</button>
+            <div id="breakeven-result" class="hidden mt-2">
+              <div class="result-item">
+                <div class="result-label">盈亏平衡用户数</div>
+                <div class="result-value" id="result-breakeven">0</div>
+                <div class="result-unit">用户 (MAU)</div>
+              </div>
+              <p class="mt-2" style="color: var(--text-secondary); font-size: 0.9rem;">
+                当月活用户达到此数量时，订阅收入刚好覆盖API成本。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PLAYGROUND SECTION ==================== -->
+    <section id="playground" class="section">
+      <h2>模型参数可视化调试场</h2>
+      <p>实时体验参数调整对模型输出的影响</p>
+
+      <div class="split-panel mt-3">
+        <!-- Left Panel: Controls -->
+        <div class="card">
+          <div class="card-header">
+            <h3>参数控制</h3>
+          </div>
+
+          <!-- Model Selector -->
+          <div class="input-group">
+            <label class="input-label">选择模型</label>
+            <div class="custom-select-wrapper">
+              <select id="playground-model" class="select-field">
+                <option value="deepseek-v3" selected>DeepSeek-V3.2</option>
+                <option value="glm-4v">GLM-4.6V</option>
+                <option value="qwen3-vl">Qwen3-VL-32B</option>
+                <option value="qwen-7b">Qwen2.5-7B</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Image Upload for Vision Models -->
+          <div class="input-group" id="playground-upload-section" style="display: none;">
+            <label class="input-label">上传图片 (可选，仅视觉模型)</label>
+            <div id="playground-drop-zone" class="drop-zone">
+              <input type="file" id="playground-file-input" accept="image/*" style="display: none;">
+              <div class="drop-zone-content">
+                <span class="upload-icon">+</span>
+                <p>拖拽图片到此处或 <span style="color: var(--primary-light); cursor: pointer;"
+                    onclick="document.getElementById('playground-file-input').click()">点击上传</span></p>
+                <small style="color: var(--text-muted);">支持 JPG, PNG, GIF (最大 4MB)</small>
+              </div>
+            </div>
+            <div id="playground-image-preview" class="image-preview hidden"></div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">输入Prompt</label>
+            <textarea id="playground-prompt" class="textarea-field" placeholder="例如：描述这张图片的内容"></textarea>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="input-label">Temperature (随机性)</label>
+              <span class="slider-value" id="temp-value">0.7</span>
+            </div>
+            <input type="range" id="temp-slider" class="slider" min="0" max="2" step="0.1" value="0.7">
+            <p class="slider-help">
+              0 = 确定性输出（每次相同）<br>
+              1-2 = 创造性输出（每次不同）
+            </p>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="input-label">Top-P (核采样)</label>
+              <span class="slider-value" id="topp-value">0.9</span>
+            </div>
+            <input type="range" id="topp-slider" class="slider" min="0" max="1" step="0.05" value="0.9">
+            <p class="slider-help">控制词汇选择的多样性范围</p>
+          </div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <label class="input-label">Max Tokens</label>
+              <span class="slider-value" id="tokens-value">1000</span>
+            </div>
+            <input type="range" id="tokens-slider" class="slider" min="100" max="4000" step="100" value="1000">
+            <p class="slider-help">限制生成的最大长度</p>
+          </div>
+
+          <button class="btn btn-primary" id="playground-generate">生成输出</button>
+        </div>
+
+        <!-- Right Panel: Output -->
+        <div class="card">
+          <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <h3>模型输出</h3>
+            <span id="current-model-badge"
+              style="background: var(--gradient-primary); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">DeepSeek-V3.2</span>
+          </div>
+          <div class="output-box" id="playground-output">
+            点击"生成输出"按钮查看AI响应...
+
+            提示：尝试调整Temperature参数：
+            - 设置为0，多次生成，观察输出是否一致
+            - 设置为1.5，多次生成，感受创造性变化
+          </div>
+          <div class="mt-2" style="display: flex; justify-content: space-between; align-items: center;">
+            <small style="color: var(--text-muted);">
+              Token: <span id="token-count">0</span> | 耗时: <span id="response-time">0</span>s
+            </small>
+            <button class="btn btn-secondary" id="playground-clear">清除</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PRD GENERATOR SECTION ==================== -->
+    <section id="prd-generator" class="section">
+      <h2>AI PRD生成助手</h2>
+      <p>一句话需求，自动生成专业产品需求文档</p>
+
+      <div class="card mt-3">
+        <!-- Model Selector for PRD -->
+        <div class="input-group">
+          <label class="input-label">选择模型</label>
+          <div class="custom-select-wrapper">
+            <select id="prd-model" class="select-field">
+              <option value="deepseek-v3" selected>DeepSeek-V3.2</option>
+              <option value="glm-4v">GLM-4.6V</option>
+              <option value="qwen3-vl">Qwen3-VL-32B</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Image Upload for Vision Models in PRD -->
+        <div class="input-group" id="prd-upload-section" style="display: none;">
+          <label class="input-label">上传参考图片 (可选，如产品草图、竞品截图)</label>
+          <div id="prd-drop-zone" class="drop-zone">
+            <input type="file" id="prd-file-input" accept="image/*" style="display: none;">
+            <div class="drop-zone-content">
+              <span class="upload-icon">+</span>
+              <p>拖拽图片到此处或 <span style="color: var(--primary-light); cursor: pointer;"
+                  onclick="document.getElementById('prd-file-input').click()">点击上传</span></p>
+              <small style="color: var(--text-muted);">支持产品原型图、竞品截图等</small>
+            </div>
+          </div>
+          <div id="prd-image-preview" class="image-preview hidden"></div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">输入你的产品想法（一句话即可）</label>
+          <textarea id="prd-input" class="textarea-field" placeholder="例如：我想做一个给大学生用的二手书交易小程序"></textarea>
+        </div>
+
+        <button class="btn btn-primary mt-2" id="prd-generate">生成PRD</button>
+
+        <div id="prd-output" class="hidden mt-3">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-md);">
+            <h3>生成的PRD文档</h3>
+            <button class="btn btn-secondary" id="prd-copy">复制全文</button>
+          </div>
+
+          <div class="card" style="background: var(--bg-input);">
+            <div id="prd-content"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== ROADMAP SECTION ==================== -->
+    <section id="roadmap" class="section">
+      <h2>动态学习路线图</h2>
+      <p>和我一起成长的AI产品经理之路</p>
+
+      <div class="roadmap-container">
+        <!-- Current Reading - Interactive -->
+        <div class="card reading-list-card" style="background: var(--gradient-card); margin-bottom: var(--spacing-xl);">
+          <div class="reading-list-header">
+            <h3>我正在读的Paper</h3>
+            <button class="btn-icon" id="reading-add-btn" title="添加文章">+</button>
+          </div>
+          <ul id="reading-list" class="reading-list"></ul>
+
+          <!-- Add/Edit Form (hidden by default) -->
+          <div id="reading-form" class="reading-form hidden">
+            <input type="text" id="reading-title" class="input-field" placeholder="论文标题">
+            <input type="text" id="reading-link" class="input-field" placeholder="论文链接 (可选, 如 https://arxiv.org/...)">
+            <input type="text" id="reading-desc" class="input-field" placeholder="简要描述 (可选)">
+            <div class="reading-form-actions">
+              <button class="btn btn-primary btn-sm" id="reading-save">保存</button>
+              <button class="btn btn-secondary btn-sm" id="reading-cancel">取消</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 1 -->
+        <div class="phase">
+          <div class="phase-header">
+            <h3>阶段一：AI产品思维基础</h3>
+          </div>
+          <div class="checkpoints">
+            <div class="checkpoint" data-checkpoint="1-1">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">理解LLM的工作原理</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="1-2">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">掌握Prompt Engineering核心技巧</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="1-3">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">学会API调用与成本估算</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="phase">
+          <div class="phase-header">
+            <h3>阶段二：API集成与优化</h3>
+          </div>
+          <div class="checkpoints">
+            <div class="checkpoint" data-checkpoint="2-1">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">集成主流LLM API (OpenAI, Gemini等)</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="2-2">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">实现Token计数与成本监控</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="2-3">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">优化Prompt降低成本</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="phase">
+          <div class="phase-header">
+            <h3>阶段三：进阶技术栈</h3>
+          </div>
+          <div class="checkpoints">
+            <div class="checkpoint" data-checkpoint="3-1">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">RAG技术与知识库构建</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="3-2">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">Fine-tuning与模型定制</div>
+            </div>
+            <div class="checkpoint" data-checkpoint="3-3">
+              <div class="checkpoint-icon"></div>
+              <div class="checkpoint-title">多模态AI产品设计</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Modal for Roadmap Details -->
+  <div id="checkpoint-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="modal-close">×</button>
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <button class="btn btn-primary mt-3" id="modal-mark-complete">标记为完成</button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Quiz Data (Loaded before app.js) -->
+  <script src="quiz_data.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Quiz Modal -->
+  <div id="quiz-modal" class="modal hidden">
+    <div class="modal-content quiz-content">
+      <span class="close-modal" id="close-quiz">&times;</span>
+      <div class="quiz-header">
+        <h3 id="quiz-module-title">Module Title</h3>
+        <span id="quiz-progress">Question 1/5</span>
+      </div>
+
+      <div id="quiz-body">
+        <div class="question-container">
+          <p id="quiz-question" class="quiz-question-text"></p>
+          <div id="quiz-options" class="quiz-options-list"></div>
+        </div>
+
+        <div id="quiz-feedback" class="quiz-feedback hidden">
+          <div id="feedback-message"></div>
+          <p id="feedback-explanation" class="feedback-explanation"></p>
+        </div>
+
+        <div class="quiz-footer">
+          <button id="next-question-btn" class="btn btn-primary hidden">Next Question</button>
+        </div>
+      </div>
+
+      <div id="quiz-results" class="hidden">
+        <div class="results-summary">
+          <h4>Quiz Completed!</h4>
+          <div class="score-display">
+            <span id="final-score">80</span>%
+          </div>
+          <p id="score-message">Great job!</p>
+        </div>
+        <div class="quiz-actions">
+          <button id="restart-quiz-btn" class="btn btn-secondary">Restart Quiz</button>
+          <button id="close-quiz-result-btn" class="btn btn-primary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

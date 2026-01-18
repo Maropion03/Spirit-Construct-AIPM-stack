@@ -1,0 +1,423 @@
+/* ========================================
+   Login Page Styles
+   ======================================== */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    padding: var(--spacing-lg);
+    position: relative;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--border-subtle);
+}
+
+/* Brand Section - Vertically stacked logo + text */
+.login-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-md);
+}
+
+.login-logo {
+    height: 80px;
+    width: auto;
+}
+
+/* Reuse navbar logo visibility rules */
+.login-logo.logo-light {
+    display: none;
+}
+
+[data-theme='dark'] .login-logo.logo-dark {
+    display: block;
+}
+
+[data-theme='dark'] .login-logo.logo-light {
+    display: none;
+}
+
+[data-theme='light'] .login-logo.logo-dark {
+    display: none;
+}
+
+[data-theme='light'] .login-logo.logo-light {
+    display: block;
+}
+
+.login-brand-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Reuse existing brand text styles */
+.login-brand-text .brand-name-zh {
+    font-family: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+.login-brand-text .brand-name-en {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: var(--spacing-xs);
+}
+
+/* Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Form Options Row */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+.forgot-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.forgot-link:hover {
+    color: var(--primary);
+}
+
+/* Login Button */
+.login-btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: #FF4F00;
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-top: var(--spacing-sm);
+}
+
+.login-btn:hover {
+    background: #E54500;
+    transform: translateY(-1px);
+}
+
+/* Divider */
+.login-divider {
+    display: flex;
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    gap: var(--spacing-md);
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+}
+
+.login-divider span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* Social Login Buttons */
+.social-login {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.social-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    background: var(--bg-input);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.social-btn:hover {
+    border-color: var(--primary);
+    background: var(--bg-tertiary);
+}
+
+.social-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.github-btn svg {
+    fill: var(--text-primary);
+}
+
+/* Register Link */
+.register-link {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.register-link a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-simple {
+    position: fixed;
+    bottom: var(--spacing-lg);
+    right: var(--spacing-lg);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.theme-toggle-simple:hover {
+    border-color: var(--primary);
+}
+
+.theme-toggle-simple .sun-icon {
+    display: none;
+}
+
+.theme-toggle-simple .moon-icon {
+    display: block;
+}
+
+[data-theme='light'] .theme-toggle-simple .sun-icon {
+    display: block;
+}
+
+[data-theme='light'] .theme-toggle-simple .moon-icon {
+    display: none;
+}
+
+/* Dark Mode Text Colors (reuse from main CSS) */
+[data-theme='dark'] .login-brand-text .brand-name-zh {
+    color: #FFFFFF;
+}
+
+[data-theme='dark'] .login-brand-text .brand-name-en {
+    color: #444444;
+}
+
+/* Light Mode Text Colors */
+[data-theme='light'] .login-brand-text .brand-name-zh {
+    color: #000000;
+}
+
+[data-theme='light'] .login-brand-text .brand-name-en {
+    color: #999999;
+}
+
+/* Login Subtitle */
+.login-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--spacing-lg);
+}
+
+/* WeChat Button */
+.wechat-btn:hover {
+    border-color: #07C160;
+}
+
+
+/* Login Success State */
+.login-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.user-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+}
+
+.welcome-text {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.logout-btn {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all var(--transition-fast);
+    margin-top: var(--spacing-sm);
+}
+
+.logout-btn:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+
+/* Form Tabs (Login/Register Buttons) */
+.form-tabs {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.form-tabs .login-btn,
+.form-tabs .register-btn {
+    flex: 1 1 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-sizing: border-box;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    min-width: 0;
+}
+
+.form-tabs .login-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 2px solid transparent;
+}
+
+.form-tabs .login-btn:hover {
+    background: linear-gradient(135deg, #5a6fd9 0%, #6a4291 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.form-tabs .register-btn {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.form-tabs .register-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #764ba2;
+    border-color: #764ba2;
+}
+/* Custom Validation Message */
+.validation-message {
+  display: none;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+  border-left: 3px solid #667eea;
+  color: #a8b4e8;
+}
+
+.validation-message.show {
+  display: block;
+}
+
+.validation-message.success {
+  background: linear-gradient(135deg, rgba(7, 193, 96, 0.15) 0%, rgba(7, 193, 96, 0.1) 100%);
+  border-left-color: #07C160;
+  color: #5fd99a;
+}
+

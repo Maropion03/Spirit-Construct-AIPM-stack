@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 60">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#38bdf8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <!-- Icon: Spark/AI Brain -->
+  <path fill="url(#grad2)" d="M30 5 C32 15 40 25 55 30 C40 35 32 45 30 55 C28 45 20 35 5 30 C20 25 28 15 30 5 Z" />
+  <circle cx="30" cy="30" r="4" fill="#fff" opacity="0.8" />
+  
+  <!-- Text -->
+  <text x="65" y="40" font-family="'Outfit', sans-serif" font-weight="700" font-size="34" letter-spacing="-1" fill="#fff">
+    AI<tspan fill="#38bdf8">.</tspan>PM
+  </text>
+</svg>
