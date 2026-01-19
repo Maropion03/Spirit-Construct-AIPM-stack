@@ -421,3 +421,198 @@
   color: #5fd99a;
 }
 
+
+/* Enter App Button - Blue Purple Gradient */
+.enter-app-btn {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.enter-app-btn:hover {
+  background: linear-gradient(135deg, #5a6fd9 0%, #6a4291 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Avatar Container with Edit Overlay */
+.avatar-container {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.avatar-container:hover .avatar-edit-overlay {
+  opacity: 1;
+}
+
+.avatar-edit-overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+
+.default-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-default);
+}
+
+/* Avatar Editor Modal */
+.avatar-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-modal.show {
+  display: flex;
+}
+
+.avatar-modal-content {
+  background: var(--bg-secondary);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 360px;
+  border: 1px solid var(--border-subtle);
+}
+
+.avatar-modal-content h3 {
+  margin: 0 0 var(--spacing-md);
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.avatar-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.avatar-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.avatar-modal-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.save-avatar-btn {
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-avatar-btn {
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+
+/* Avatar Drop Zone */
+.avatar-drop-zone {
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: var(--spacing-md);
+}
+
+.avatar-drop-zone:hover,
+.avatar-drop-zone.drag-over {
+  border-color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.avatar-drop-zone p {
+  margin: var(--spacing-sm) 0 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.avatar-drop-zone .upload-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: block;
+  margin-top: var(--spacing-xs);
+}
+
+.avatar-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--spacing-md);
+  display: block;
+  border: 2px solid #667eea;
+}
+
+/* Cancel Button with Border */
+.cancel-avatar-btn {
+  flex: 1;
+  padding: var(--spacing-sm);
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.cancel-avatar-btn:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+

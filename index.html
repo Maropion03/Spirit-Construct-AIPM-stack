@@ -21,6 +21,9 @@
 
   <!-- Stylesheet -->
   <link rel="stylesheet" href="index.css">
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -46,8 +49,8 @@
 
     <!-- Navbar Actions (Login + Theme) -->
     <div class="navbar-actions">
-      <a href="login.html" class="navbar-login-btn" title="登录">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+      <a href="login.html" class="navbar-login-btn" id="navbar-user-btn" title="登录">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" class="default-user-icon">
           <path
             d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
         </svg>
@@ -512,6 +515,33 @@
       </div>
     </div>
   </div>
+
+  <!-- Auth Check for Navbar Avatar -->
+  <script>
+    (async function initNavbarAuth() {
+      const SUPABASE_URL = 'https://rpqvpedrmalgdwzpshgt.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwcXZwZWRybWFsZ2R3enBzaGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NTU4MzAsImV4cCI6MjA4NDMzMTgzMH0.dArSCArtyiG8soYDzv8mjHFaVWd1jovuJKYrv4AreLk';
+
+      if (typeof window.supabase === 'undefined') return;
+
+      // Always create fresh client with API key
+      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.supabaseClient = client;
+
+      const { data: { session } } = await client.auth.getSession();
+
+      if (session && session.user) {
+        const user = session.user;
+        const avatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+        const btn = document.getElementById('navbar-user-btn');
+
+        if (btn && avatar) {
+          btn.innerHTML = `<img src="${avatar}" alt="User" class="navbar-user-avatar">`;
+          btn.title = user.user_metadata?.full_name || user.email || '用户';
+        }
+      }
+    })();
+  </script>
 </body>
 
 </html>

@@ -2310,3 +2310,12 @@ html[data-theme='light'] .brand-name-en {
   gap: var(--spacing-sm);
 }
 
+
+/* Navbar User Avatar */
+.navbar-user-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+

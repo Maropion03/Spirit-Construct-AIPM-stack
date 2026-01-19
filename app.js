@@ -2,7 +2,118 @@
    Application Logic
    ======================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
+// Supabase Configuration for User Data Sync
+const SUPABASE_URL = 'https://rpqvpedrmalgdwzpshgt.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwcXZwZWRybWFsZ2R3enBzaGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NTU4MzAsImV4cCI6MjA4NDMzMTgzMH0.dArSCArtyiG8soYDzv8mjHFaVWd1jovuJKYrv4AreLk';
+
+let supabaseClient = null;
+let currentUserId = null;
+
+// Initialize Supabase client (reuse existing or create new)
+async function initSupabaseClient() {
+    if (typeof window.supabase === 'undefined') {
+        console.log('Supabase SDK not loaded');
+        return null;
+    }
+
+    // Reuse existing client if available, otherwise create new
+    if (window.supabaseClient) {
+        supabaseClient = window.supabaseClient;
+    } else {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supabaseClient = supabaseClient;
+    }
+
+    // Check if user is logged in
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session && session.user) {
+        currentUserId = session.user.id;
+    }
+
+    // Listen for auth state changes - reload page to refresh data
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        const newUserId = session?.user?.id || null;
+
+        // If user changed (login/logout/switch account), clear localStorage and reload
+        if (newUserId !== currentUserId) {
+            console.log('Auth state changed, clearing localStorage and reloading...');
+            // Clear user-specific data from localStorage to prevent cross-account leakage
+            localStorage.removeItem('reading-list');
+            localStorage.removeItem('roadmap-progress');
+            window.location.reload();
+        }
+    });
+
+    return supabaseClient;
+}
+
+// Load user data from Supabase or localStorage
+async function loadUserData(dataType, defaultValue) {
+    // If logged in, ONLY load from Supabase (never localStorage to ensure account isolation)
+    if (currentUserId && supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('user_data')
+                .select('data')
+                .eq('user_id', currentUserId)
+                .eq('data_type', dataType)
+                .maybeSingle();
+
+            if (error) {
+                console.log('Supabase query error:', error.code, error.message);
+                // Return default, NOT localStorage (account isolation)
+                return defaultValue;
+            }
+
+            if (data) {
+                return data.data;
+            }
+
+            // No cloud data for this user - return default
+            return defaultValue;
+        } catch (err) {
+            console.log('Supabase load error:', err);
+            // Return default, NOT localStorage (account isolation)
+            return defaultValue;
+        }
+    }
+
+    // Only use localStorage when NOT logged in
+    return JSON.parse(localStorage.getItem(dataType)) || defaultValue;
+}
+
+// Save user data to Supabase and localStorage
+async function saveUserData(dataType, data) {
+    // Always save to localStorage as backup
+    localStorage.setItem(dataType, JSON.stringify(data));
+
+    // If logged in, also save to Supabase
+    if (currentUserId && supabaseClient) {
+        try {
+            const { error } = await supabaseClient
+                .from('user_data')
+                .upsert({
+                    user_id: currentUserId,
+                    data_type: dataType,
+                    data: data,
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'user_id,data_type'
+                });
+
+            if (error) {
+                console.error('Supabase save error:', error);
+            }
+        } catch (err) {
+            console.error('Supabase save failed:', err);
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize Supabase first
+    await initSupabaseClient();
+
     initNavigation();
     initCalculator();
     initPlayground();
@@ -550,7 +661,7 @@ function initPrdGenerator() {
 /* ========================================
    5. Interactive Roadmap
    ======================================== */
-function initRoadmap() {
+async function initRoadmap() {
     // Data definition for checkpoints using structured resource links
     const checkpointData = {
         '1-1': {
@@ -757,8 +868,8 @@ function initRoadmap() {
 
     let currentCheckpointId = null;
 
-    // Load saved progress
-    const savedProgress = JSON.parse(localStorage.getItem('roadmap-progress') || '[]');
+    // Load saved progress from Supabase or localStorage
+    const savedProgress = await loadUserData('roadmap-progress', []);
     savedProgress.forEach(id => {
         const el = document.querySelector(`.checkpoint[data-checkpoint="${id}"]`);
         if (el) el.classList.add('completed');
@@ -872,7 +983,7 @@ function initRoadmap() {
             if (el) el.classList.remove('completed');
         }
 
-        localStorage.setItem('roadmap-progress', JSON.stringify(savedProgress));
+        saveUserData('roadmap-progress', savedProgress);
         updateButtonState();
     });
 }
@@ -880,7 +991,7 @@ function initRoadmap() {
 /* ========================================
    6. Interactive Reading List
    ======================================== */
-function initReadingList() {
+async function initReadingList() {
     const listContainer = document.getElementById('reading-list');
     const addBtn = document.getElementById('reading-add-btn');
     const formContainer = document.getElementById('reading-form');
@@ -899,12 +1010,12 @@ function initReadingList() {
         { id: 3, title: 'Constitutional AI', desc: 'AI对齐与安全性研究' }
     ];
 
-    // Load from localStorage or use default
-    let readingList = JSON.parse(localStorage.getItem('reading-list')) || defaultList;
+    // Load from Supabase or localStorage
+    let readingList = await loadUserData('reading-list', defaultList);
     let editingId = null;
 
     function saveList() {
-        localStorage.setItem('reading-list', JSON.stringify(readingList));
+        saveUserData('reading-list', readingList);
     }
 
     function renderList() {
