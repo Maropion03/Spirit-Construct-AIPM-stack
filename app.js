@@ -1547,9 +1547,8 @@ function initNewsSection() {
     const dateStr = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
     if (newsDateEl) newsDateEl.textContent = dateStr;
 
-    // Cloudflare Worker API endpoint
-    // Custom domain for China access
-    const WORKER_API_URL = 'https://api.spirit-construct-maropion.top/api/news';
+    // Cloudflare Pages Functions API (same domain, no cross-origin issues)
+    const WORKER_API_URL = '/api/news';
 
     // RSS Feed Sources - Chinese Tech Media via RSSHub (fallback)
     const rssSources = [
