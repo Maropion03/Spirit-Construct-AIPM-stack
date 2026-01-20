@@ -2,118 +2,7 @@
    Application Logic
    ======================================== */
 
-// Supabase Configuration for User Data Sync
-const SUPABASE_URL = 'https://rpqvpedrmalgdwzpshgt.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwcXZwZWRybWFsZ2R3enBzaGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3NTU4MzAsImV4cCI6MjA4NDMzMTgzMH0.dArSCArtyiG8soYDzv8mjHFaVWd1jovuJKYrv4AreLk';
-
-let supabaseClient = null;
-let currentUserId = null;
-
-// Initialize Supabase client (reuse existing or create new)
-async function initSupabaseClient() {
-    if (typeof window.supabase === 'undefined') {
-        console.log('Supabase SDK not loaded');
-        return null;
-    }
-
-    // Reuse existing client if available, otherwise create new
-    if (window.supabaseClient) {
-        supabaseClient = window.supabaseClient;
-    } else {
-        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        window.supabaseClient = supabaseClient;
-    }
-
-    // Check if user is logged in
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (session && session.user) {
-        currentUserId = session.user.id;
-    }
-
-    // Listen for auth state changes - reload page to refresh data
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        const newUserId = session?.user?.id || null;
-
-        // If user changed (login/logout/switch account), clear localStorage and reload
-        if (newUserId !== currentUserId) {
-            console.log('Auth state changed, clearing localStorage and reloading...');
-            // Clear user-specific data from localStorage to prevent cross-account leakage
-            localStorage.removeItem('reading-list');
-            localStorage.removeItem('roadmap-progress');
-            window.location.reload();
-        }
-    });
-
-    return supabaseClient;
-}
-
-// Load user data from Supabase or localStorage
-async function loadUserData(dataType, defaultValue) {
-    // If logged in, ONLY load from Supabase (never localStorage to ensure account isolation)
-    if (currentUserId && supabaseClient) {
-        try {
-            const { data, error } = await supabaseClient
-                .from('user_data')
-                .select('data')
-                .eq('user_id', currentUserId)
-                .eq('data_type', dataType)
-                .maybeSingle();
-
-            if (error) {
-                console.log('Supabase query error:', error.code, error.message);
-                // Return default, NOT localStorage (account isolation)
-                return defaultValue;
-            }
-
-            if (data) {
-                return data.data;
-            }
-
-            // No cloud data for this user - return default
-            return defaultValue;
-        } catch (err) {
-            console.log('Supabase load error:', err);
-            // Return default, NOT localStorage (account isolation)
-            return defaultValue;
-        }
-    }
-
-    // Only use localStorage when NOT logged in
-    return JSON.parse(localStorage.getItem(dataType)) || defaultValue;
-}
-
-// Save user data to Supabase and localStorage
-async function saveUserData(dataType, data) {
-    // Always save to localStorage as backup
-    localStorage.setItem(dataType, JSON.stringify(data));
-
-    // If logged in, also save to Supabase
-    if (currentUserId && supabaseClient) {
-        try {
-            const { error } = await supabaseClient
-                .from('user_data')
-                .upsert({
-                    user_id: currentUserId,
-                    data_type: dataType,
-                    data: data,
-                    updated_at: new Date().toISOString()
-                }, {
-                    onConflict: 'user_id,data_type'
-                });
-
-            if (error) {
-                console.error('Supabase save error:', error);
-            }
-        } catch (err) {
-            console.error('Supabase save failed:', err);
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    // Initialize Supabase first
-    await initSupabaseClient();
-
+document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initCalculator();
     initPlayground();
@@ -661,7 +550,7 @@ function initPrdGenerator() {
 /* ========================================
    5. Interactive Roadmap
    ======================================== */
-async function initRoadmap() {
+function initRoadmap() {
     // Data definition for checkpoints using structured resource links
     const checkpointData = {
         '1-1': {
@@ -868,8 +757,8 @@ async function initRoadmap() {
 
     let currentCheckpointId = null;
 
-    // Load saved progress from Supabase or localStorage
-    const savedProgress = await loadUserData('roadmap-progress', []);
+    // Load saved progress
+    const savedProgress = JSON.parse(localStorage.getItem('roadmap-progress') || '[]');
     savedProgress.forEach(id => {
         const el = document.querySelector(`.checkpoint[data-checkpoint="${id}"]`);
         if (el) el.classList.add('completed');
@@ -983,7 +872,7 @@ async function initRoadmap() {
             if (el) el.classList.remove('completed');
         }
 
-        saveUserData('roadmap-progress', savedProgress);
+        localStorage.setItem('roadmap-progress', JSON.stringify(savedProgress));
         updateButtonState();
     });
 }
@@ -991,7 +880,7 @@ async function initRoadmap() {
 /* ========================================
    6. Interactive Reading List
    ======================================== */
-async function initReadingList() {
+function initReadingList() {
     const listContainer = document.getElementById('reading-list');
     const addBtn = document.getElementById('reading-add-btn');
     const formContainer = document.getElementById('reading-form');
@@ -1010,12 +899,12 @@ async function initReadingList() {
         { id: 3, title: 'Constitutional AI', desc: 'AI对齐与安全性研究' }
     ];
 
-    // Load from Supabase or localStorage
-    let readingList = await loadUserData('reading-list', defaultList);
+    // Load from localStorage or use default
+    let readingList = JSON.parse(localStorage.getItem('reading-list')) || defaultList;
     let editingId = null;
 
     function saveList() {
-        saveUserData('reading-list', readingList);
+        localStorage.setItem('reading-list', JSON.stringify(readingList));
     }
 
     function renderList() {
@@ -1547,85 +1436,83 @@ function initNewsSection() {
     const dateStr = today.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
     if (newsDateEl) newsDateEl.textContent = dateStr;
 
-    // Cloudflare Pages Functions API (same domain, no cross-origin issues)
-    const WORKER_API_URL = '/api/news';
-
-    // RSS Feed Sources - Chinese Tech Media via RSSHub (fallback)
-    const rssSources = [
-        { url: 'https://rsshub.app/latepost', iconUrl: 'https://www.latepost.com/favicon.ico', source: '晚点LatePost', tags: ['科技', '深度'] },
-        { url: 'https://rsshub.app/geekpark/breakingnews', iconUrl: 'https://www.geekpark.net/favicon.ico', source: '极客公园', tags: ['科技', '创新'] },
-        { url: 'https://rsshub.app/jiqizhixin', iconUrl: 'https://www.jiqizhixin.com/favicon.ico', source: '机器之心', tags: ['AI', '研究'] },
-        { url: 'https://rsshub.app/qbitai/category/AI', iconUrl: 'https://www.qbitai.com/favicon.ico', source: '量子位', tags: ['AI', '前沿'] },
-        { url: 'https://rsshub.app/jike/topic/6360f69931b64376510df2e9', iconUrl: 'https://web.okjike.com/favicon.ico', source: '即刻', tags: ['社区', 'AI'] }
+    // ========== INTERNATIONAL SOURCES (VPN users) ==========
+    const internationalSources = [
+        { url: 'https://pytorch.org/blog/feed.xml', iconUrl: 'https://pytorch.org/favicon.ico', source: 'PyTorch', tags: ['Framework', 'ML'] },
+        { url: 'https://blog.google/technology/ai/rss/', iconUrl: 'https://www.google.com/favicon.ico', source: 'Google AI', tags: ['Research', 'AI'] },
+        { url: 'https://blogs.microsoft.com/ai/feed/', iconUrl: 'https://www.microsoft.com/favicon.ico', source: 'Microsoft AI', tags: ['Research', 'AI'] },
+        { url: 'https://huggingface.co/blog/feed.xml', iconUrl: 'https://huggingface.co/favicon.ico', source: 'Hugging Face', tags: ['Open Source', 'ML'] },
+        { url: 'https://openai.com/blog/rss/', iconUrl: 'https://openai.com/favicon.ico', source: 'OpenAI', tags: ['Research', 'AI'] },
+        { url: 'https://www.anthropic.com/feed.xml', iconUrl: 'https://www.anthropic.com/favicon.ico', source: 'Anthropic', tags: ['Research', 'Safety'] }
     ];
 
-    // RSSHub typically has CORS enabled, try direct first, fallback to proxy
-    const CORS_PROXY = '';
-
-    // Fallback static data (used if all feeds fail)
-    const fallbackData = [
-        { id: 1, iconUrl: 'https://www.latepost.com/favicon.ico', title: '晚点独家：科技行业最新动态', desc: '深度报道科技公司战略与行业趋势。', url: 'https://www.latepost.com/', tags: ['科技', '深度'], time: '近期' },
-        { id: 2, iconUrl: 'https://www.jiqizhixin.com/favicon.ico', title: '机器之心：AI研究前沿', desc: '追踪人工智能领域的最新研究成果。', url: 'https://www.jiqizhixin.com/', tags: ['AI', '研究'], time: '近期' },
-        { id: 3, iconUrl: 'https://www.qbitai.com/favicon.ico', title: '量子位：AI产品与应用', desc: '关注AI技术的产品化与商业应用。', url: 'https://www.qbitai.com/', tags: ['AI', '前沿'], time: '近期' }
+    // ========== DOMESTIC SOURCES (No VPN - China) ==========
+    const domesticSources = [
+        { name: '机器之心', url: 'https://www.jiqizhixin.com/', iconUrl: 'https://www.jiqizhixin.com/favicon.ico', tags: ['AI', '研究'], desc: '专注AI技术与产业深度报道' },
+        { name: '新智元', url: 'https://www.aixinzhiyuan.com/', iconUrl: 'https://www.aixinzhiyuan.com/favicon.ico', tags: ['AI', '前沿'], desc: '人工智能产业媒体与创新服务平台' },
+        { name: '晚点LatePost', url: 'https://www.latepost.com/', iconUrl: 'https://www.latepost.com/favicon.ico', tags: ['科技', '深度'], desc: '科技公司战略与行业趋势分析' },
+        { name: '量子位', url: 'https://www.qbitai.com/', iconUrl: 'https://www.qbitai.com/favicon.ico', tags: ['AI', '产品'], desc: '关注AI技术的产品化与商业应用' },
+        { name: '36氪', url: 'https://36kr.com/information/AI/', iconUrl: 'https://36kr.com/favicon.ico', tags: ['科技', '创业'], desc: '科技与创业领域综合资讯' },
+        { name: 'InfoQ', url: 'https://www.infoq.cn/topic/ai', iconUrl: 'https://www.infoq.cn/favicon.ico', tags: ['技术', 'AI'], desc: '专业开发者技术社区与资讯' }
     ];
+
+    // CORS Proxy for RSS
+    const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+    const VPN_TEST_TIMEOUT = 3000; // 3 seconds
 
     // Show loading state
-    newsGrid.innerHTML = '<div class="news-loading"><span class="loading"></span> 正在加载最新资讯...</div>';
+    newsGrid.innerHTML = '<div class="news-loading"><span class="loading"></span> 正在检测网络并加载资讯...</div>';
 
-    // Try Worker API first, then fallback to RSSHub
-    async function loadNews() {
-        // Method 1: Try Cloudflare Worker (Tavily-powered)
-        if (WORKER_API_URL) {
-            try {
-                const response = await fetch(WORKER_API_URL);
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        renderNewsCards(data);
-                        return;
-                    }
-                }
-            } catch (error) {
-                console.warn('Worker API failed, falling back to RSSHub:', error);
-            }
+    // ========== VPN DETECTION ==========
+    async function detectVPN() {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), VPN_TEST_TIMEOUT);
+
+            // Try to fetch a small international resource
+            const response = await fetch('https://www.google.com/favicon.ico', {
+                method: 'HEAD',
+                mode: 'no-cors',
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            return true; // VPN available
+        } catch (error) {
+            console.log('VPN not detected, using domestic sources');
+            return false; // No VPN
         }
-
-        // Method 2: Fallback to RSSHub direct fetch
-        loadAllFeeds();
     }
 
+    // ========== FETCH RSS FEED ==========
     async function fetchRSSFeed(source) {
         try {
-            const response = await fetch(CORS_PROXY + encodeURIComponent(source.url));
+            const response = await fetch(CORS_PROXY + encodeURIComponent(source.url), {
+                signal: AbortSignal.timeout(8000)
+            });
             if (!response.ok) throw new Error('Network error');
             const text = await response.text();
             const parser = new DOMParser();
             const xml = parser.parseFromString(text, 'text/xml');
 
-            // Parse RSS items
             const items = xml.querySelectorAll('item');
             const newsItems = [];
 
             items.forEach((item, index) => {
-                if (index >= 2) return; // Max 2 per source
+                if (index >= 1) return; // 1 per source
                 const title = item.querySelector('title')?.textContent || 'Untitled';
                 const link = item.querySelector('link')?.textContent || source.url;
                 const description = item.querySelector('description')?.textContent || '';
                 const pubDate = item.querySelector('pubDate')?.textContent;
 
-                // Clean HTML from description
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = description;
-                const cleanDesc = tempDiv.textContent?.substring(0, 100) + '...' || '';
+                const cleanDesc = tempDiv.textContent?.substring(0, 80) + '...' || '';
 
-                // Format time
                 let timeStr = '近期';
                 if (pubDate) {
-                    const date = new Date(pubDate);
-                    const diffHours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
+                    const diffHours = Math.floor((Date.now() - new Date(pubDate).getTime()) / 3600000);
                     if (diffHours < 1) timeStr = '刚刚';
                     else if (diffHours < 24) timeStr = `${diffHours}小时前`;
-                    else if (diffHours < 48) timeStr = '1天前';
                     else timeStr = `${Math.floor(diffHours / 24)}天前`;
                 }
 
@@ -1635,7 +1522,6 @@ function initNewsSection() {
                     title: title,
                     desc: cleanDesc,
                     url: link,
-                    source: source.source,
                     tags: source.tags,
                     time: timeStr
                 });
@@ -1643,38 +1529,64 @@ function initNewsSection() {
 
             return newsItems;
         } catch (error) {
-            console.warn(`Failed to fetch ${source.source}:`, error);
+            console.warn(`Failed to fetch ${source.source || source.name}:`, error.message);
             return [];
         }
     }
 
-    async function loadAllFeeds() {
+    // ========== LOAD INTERNATIONAL FEEDS ==========
+    async function loadInternationalFeeds() {
+        const feedPromises = internationalSources.map(source => fetchRSSFeed(source));
+        const results = await Promise.allSettled(feedPromises);
+
+        let allNews = [];
+        results.forEach(result => {
+            if (result.status === 'fulfilled' && result.value.length > 0) {
+                allNews = allNews.concat(result.value);
+            }
+        });
+
+        return allNews.slice(0, 6);
+    }
+
+    // ========== LOAD DOMESTIC (STATIC LINKS) ==========
+    function loadDomesticSources() {
+        return domesticSources.map((source, index) => ({
+            id: `domestic-${index}`,
+            iconUrl: source.iconUrl,
+            title: source.name + '：最新AI资讯',
+            desc: source.desc,
+            url: source.url,
+            tags: source.tags,
+            time: '热门'
+        }));
+    }
+
+    // ========== MAIN LOAD FUNCTION ==========
+    async function loadNews() {
         try {
-            const feedPromises = rssSources.map(source => fetchRSSFeed(source));
-            const results = await Promise.allSettled(feedPromises);
+            const hasVPN = await detectVPN();
+            let newsData = [];
 
-            let allNews = [];
-            results.forEach(result => {
-                if (result.status === 'fulfilled' && result.value.length > 0) {
-                    allNews = allNews.concat(result.value);
-                }
-            });
-
-            // If no feeds worked, use fallback
-            if (allNews.length === 0) {
-                allNews = fallbackData;
+            if (hasVPN) {
+                console.log('VPN detected, loading international sources...');
+                newsData = await loadInternationalFeeds();
             }
 
-            // Sort by time (most recent first) and limit to 6
-            allNews = allNews.slice(0, 6);
+            // If no VPN or international feeds failed
+            if (newsData.length === 0) {
+                console.log('Loading domestic sources...');
+                newsData = loadDomesticSources();
+            }
 
-            renderNewsCards(allNews);
+            renderNewsCards(newsData);
         } catch (error) {
-            console.error('Failed to load news feeds:', error);
-            renderNewsCards(fallbackData);
+            console.error('News loading failed:', error);
+            renderNewsCards(loadDomesticSources());
         }
     }
 
+    // ========== RENDER CARDS ==========
     function renderNewsCards(newsData) {
         if (newsData.length === 0) {
             newsGrid.innerHTML = '<div class="news-empty">暂无资讯，请稍后刷新</div>';
@@ -1696,7 +1608,7 @@ function initNewsSection() {
         `).join('');
     }
 
-    // Start loading news (tries Worker API first, then RSSHub)
+    // Start loading
     loadNews();
 }
 
