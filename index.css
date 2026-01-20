@@ -254,6 +254,53 @@ p {
   color: var(--primary-light);
 }
 
+/* Navbar Actions (GitHub, Login, Theme) */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-github-btn,
+.navbar-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.navbar-github-btn:hover,
+.navbar-login-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+  transform: translateY(-2px);
+}
+
+.navbar-github-btn svg,
+.navbar-login-btn svg {
+  transition: transform var(--transition-fast);
+}
+
+.navbar-github-btn:hover svg,
+.navbar-login-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.navbar-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 /* ========================================
    Container & Layout
    ======================================== */
@@ -1744,13 +1791,26 @@ a.reading-item-title:hover {
 .news-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--spacing-lg);
+}
+
+.news-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .news-header h2 {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.news-vpn-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  opacity: 0.8;
 }
 
 .news-date {
@@ -2200,16 +2260,30 @@ a.news-card {
 .brand-name {
   display: none;
 }
+
 /* Carbon & Signal Theme - Logo & Brand Colors */
 
 /* Dark Mode Logo Visibility */
-[data-theme='dark'] .logo-dark { display: block; }
-[data-theme='dark'] .logo-light { display: none; }
-[data-theme='light'] .logo-dark { display: none; }
-[data-theme='light'] .logo-light { display: block; }
+[data-theme='dark'] .logo-dark {
+  display: block;
+}
+
+[data-theme='dark'] .logo-light {
+  display: none;
+}
+
+[data-theme='light'] .logo-dark {
+  display: none;
+}
+
+[data-theme='light'] .logo-light {
+  display: block;
+}
 
 /* Default (dark mode) */
-.logo-light { display: none; }
+.logo-light {
+  display: none;
+}
 
 /* Dark Mode Brand Colors */
 [data-theme='dark'] .brand-name-zh {
@@ -2318,4 +2392,3 @@ html[data-theme='light'] .brand-name-en {
   border-radius: 50%;
   object-fit: cover;
 }
-

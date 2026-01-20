@@ -1437,13 +1437,16 @@ function initNewsSection() {
     if (newsDateEl) newsDateEl.textContent = dateStr;
 
     // ========== INTERNATIONAL SOURCES (VPN users) ==========
+    // More actively updated sources with better RSS support
     const internationalSources = [
-        { url: 'https://pytorch.org/blog/feed.xml', iconUrl: 'https://pytorch.org/favicon.ico', source: 'PyTorch', tags: ['Framework', 'ML'] },
-        { url: 'https://blog.google/technology/ai/rss/', iconUrl: 'https://www.google.com/favicon.ico', source: 'Google AI', tags: ['Research', 'AI'] },
-        { url: 'https://blogs.microsoft.com/ai/feed/', iconUrl: 'https://www.microsoft.com/favicon.ico', source: 'Microsoft AI', tags: ['Research', 'AI'] },
-        { url: 'https://huggingface.co/blog/feed.xml', iconUrl: 'https://huggingface.co/favicon.ico', source: 'Hugging Face', tags: ['Open Source', 'ML'] },
-        { url: 'https://openai.com/blog/rss/', iconUrl: 'https://openai.com/favicon.ico', source: 'OpenAI', tags: ['Research', 'AI'] },
-        { url: 'https://www.anthropic.com/feed.xml', iconUrl: 'https://www.anthropic.com/favicon.ico', source: 'Anthropic', tags: ['Research', 'Safety'] }
+        { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', iconUrl: 'https://techcrunch.com/favicon.ico', source: 'TechCrunch AI', tags: ['News', 'AI'] },
+        { url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml', iconUrl: 'https://www.theverge.com/favicon.ico', source: 'The Verge AI', tags: ['News', 'Tech'] },
+        { url: 'https://venturebeat.com/category/ai/feed/', iconUrl: 'https://venturebeat.com/favicon.ico', source: 'VentureBeat AI', tags: ['News', 'AI'] },
+        { url: 'https://www.wired.com/feed/tag/ai/latest/rss', iconUrl: 'https://www.wired.com/favicon.ico', source: 'WIRED AI', tags: ['Tech', 'AI'] },
+        { url: 'https://news.ycombinator.com/rss', iconUrl: 'https://news.ycombinator.com/favicon.ico', source: 'Hacker News', tags: ['Tech', 'Dev'] },
+        { url: 'https://arxiv.org/rss/cs.AI', iconUrl: 'https://arxiv.org/favicon.ico', source: 'arXiv AI', tags: ['Research', 'Papers'] },
+        { url: 'https://www.technologyreview.com/feed/', iconUrl: 'https://www.technologyreview.com/favicon.ico', source: 'MIT Tech Review', tags: ['Research', 'Tech'] },
+        { url: 'https://huggingface.co/blog/feed.xml', iconUrl: 'https://huggingface.co/favicon.ico', source: 'Hugging Face', tags: ['Open Source', 'ML'] }
     ];
 
     // ========== DOMESTIC SOURCES (No VPN - China) ==========
