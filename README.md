@@ -62,6 +62,9 @@ AI API: SiliconFlow (Qwen, GLM-4 等模型)
 
 ## 快速开始
 
+### 直接访问
+https://spirit-construct-maropion.top/
+
 ### 本地运行
 
 ```bash
